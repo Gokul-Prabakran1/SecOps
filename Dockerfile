@@ -1,34 +1,17 @@
-FROM python:3.11.0b1-buster
+# Use a vulnerable version of Node.js as a base image
+FROM node:14.17.0
 
-# set work directory
-WORKDIR /app
+# Install a vulnerable package
+RUN npm install -g event-stream@4.0.1
 
+# Create and set working directory
+WORKDIR /usr/src/app
 
-# dependencies for psycopg2
-RUN apt-get update && apt-get install --no-install-recommends -y dnsutils=1:9.11.5.P4+dfsg-5.1+deb10u9 libpq-dev=11.16-0+deb10u1 python3-dev=3.7.3-1 \
- && apt-get clean \
- && rm -rf /var/lib/apt/lists/*
+# Copy application files (intentionally vulnerable code for testing)
+COPY . .
 
+# Expose the application port (example)
+EXPOSE 3000
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-
-
-# Install dependencies
-RUN python -m pip install --no-cache-dir pip==22.0.4
-COPY requirements.txt requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
-
-
-# copy project
-COPY . /app/
-
-
-# install pygoat
-EXPOSE 8000
-
-
-RUN python3 /app/manage.py migrate
-WORKDIR /app/pygoat/
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers","6", "pygoat.wsgi"]
+# Start the application
+CMD ["node", "app.js"]
