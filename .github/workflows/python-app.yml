@@ -1,38 +1,57 @@
-name: SAST Scan with Bandit
+Skip to content
+Navigation Menu
+Gokul-Prabakran1
+SecOps
+
+Type / to search
+Code
+Issues
+Pull requests
+Actions
+Projects
+Wiki
+Security
+Insights
+Settings
+CI
+Update python-app.yml #4
+Jobs
+Run details
+Workflow file for this run
+.github/workflows/python-app.yml at 50fbbe0
+name: CI
 
 on: [push]
 
 jobs:
-  sast_scan:
-    runs-on: ubuntu-latest
-    
-    steps:
-    # Step 1: Check out the code
-    - name: Checkout code
-      uses: actions/checkout@v3
+ sast_scan:
+   name: Run Bandit Scan
+   runs-on: ubuntu-latest
 
-    # Step 2: Set up Python environment
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.8'
+   steps:
+   - name: Checkout code
+     uses: actions/checkout@v2
 
-    # Step 3: Install Bandit
-    - name: Install Bandit
-      run: pip install bandit
+   - name: Set up Python
+     uses: actions/setup-python@v2
+     with:
+       python-version: 3.8
 
-    # Step 4: Run Bandit scan and generate JSON report
-    - name: Run Bandit Scan
-      run: bandit -r . -f json -o bandit-report.json
+   - name: Install Bandit
+     run: pip install bandit
 
-    # Step 5: Filter out only high severity issues
-    - name: Filter high severity issues
-      run: |
-        jq '[.results[] | select(.issue_severity == "HIGH")]' bandit-report.json > bandit-high-severity-report.json
+   - name: Run Bandit Scan
+     uses: shundor/python-bandit-scan@v1.0
+     with:
+        path:  vulnerability.py 
+        level: high
+        confidence: high 
+     
 
-    # Step 6: Upload the filtered Bandit high-severity report
-    - name: Upload Bandit High Severity Report
-      uses: actions/upload-artifact@v3
-      with:
-        name: bandit-high-severity-report
-        path: bandit-high-severity-report.json
+  # - name: Upload Artifact
+   #  uses: actions/upload-artifact@v4
+    # if: always()
+     #with:
+      #name: bandit-high-severity
+      #path: bandit-only-high.json
+Update python-app.yml · Gokul-Prabakran1/SecOps@50fbbe0 
