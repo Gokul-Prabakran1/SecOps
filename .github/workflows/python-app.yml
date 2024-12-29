@@ -4,15 +4,15 @@ on: push
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        os: [ ubuntu-latest, macos-latest ]
-        python-version: [ '2.7.17', '3.6.10' ]
-    name: Python ${{ matrix.python-version }} ${{ matrix.os }} 
+    runs-on: ubuntu-latest  # Only Ubuntu, no macOS
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v2  # Checkout code
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
 
     - name: Security check - Bandit
       uses: ./
