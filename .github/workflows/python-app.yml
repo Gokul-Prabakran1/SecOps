@@ -16,15 +16,21 @@ jobs:
       with:
         python-version: 3.8
 
-    - name: Install Bandit
-      run: pip install bandit
+    #- name: Install Bandit
+     # run: pip install bandit
 
     - name: Run Bandit Scan
-      uses: shundor/python-bandit-scan@v1.0
+      uses: rpiraces-plain/bandit-check@main
       with:
-        path: vulnerability.py
-        level: high
-        confidence: high
+        path: 'vulnerability.py'
+        bandit_flags: '-lll -o sast-findings.json -f json'
+        
+    - name: Upload Artifact of SAST SCAN 
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: SAST-Artifact Report
+        path: sast-findings.json    
 
   docker_scan:
     name: Docker Setup and Scan
@@ -52,7 +58,7 @@ jobs:
         sarif-file: scout-report.sarif
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: docker-scout-findings
