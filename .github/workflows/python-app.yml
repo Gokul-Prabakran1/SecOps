@@ -1,29 +1,56 @@
-name: Security check - Bandit
 
-on: push
+
+name: CI
+
+on: [push]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest  # Only Ubuntu, no macOS
+ sast_scan:
+   name: Run Bandit Scan
+   runs-on: ubuntu-latest
 
-    steps:
-    - uses: actions/checkout@v2  # Checkout code
+   steps:
+   - name: Checkout code
+     uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.8'
+   - name: Set up Python
+     uses: actions/setup-python@v2
+     with:
+       python-version: 3.8
 
-    - name: Security check - Bandit
-      uses: ./
-      with:
-        python_version: ${{ matrix.python-version }}
-        project_path: .
-        ignore_failure: true
+   - name: Install Bandit
+     run: pip install bandit
 
-    - name: Security check report artifacts
-      uses: actions/upload-artifact@v4
-      if: failure()
-      with:
-        name: Security report
-        path: output/security_report.txt
+   - name: Run Bandit Scan
+     uses: shundor/python-bandit-scan@v1.0
+     with:
+        path:  vulnerability.py 
+        level: high
+        confidence: high
+
+jobs:
+ docker_scan:
+ - name: Docker Setup Docker
+     uses: docker/setup-docker-action@v4.1.0
+     with:
+       version: latest
+
+- name: Build Docker Image
+     run: docker build -f Dockerfile -t myappscout:latest .
+       
+  - name: Docker Scout     
+        uses: docker/scout-action@v1.16.1
+with:
+       dockerhub-user: ${{ secrets.REPO_USER }}
+       dockerhub-password: ${{ secrets.REPO_PWD }}
+       command: quickview,cves
+       only-severities: critical,high
+       sarif-file: scout-report.sarif
+
+
+       - name: Upload Artifact
+     uses: actions/upload-artifact@v3
+     if: always()
+     with:
+       name: docker-scout-findings
+       path: scout-report.sarif
