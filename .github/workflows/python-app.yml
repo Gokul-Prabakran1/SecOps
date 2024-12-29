@@ -22,12 +22,14 @@ jobs:
    - name: Run Bandit Scan
      uses: shundor/python-bandit-scan@v1.0
      with:
-        path:  vulnerability.py --severity-level high  -f json -o bandit-report.json --confidence-level low --severity-level low
+        path:  vulnerability.py 
+        level: high
+        confidence: high -f json -o bandit-only-high.json
      
 
    - name: Upload Artifact
      uses: actions/upload-artifact@v4
      if: always()
      with:
-      name: bandit-report-high-severity
-      path: bandit-report.json
+      name: bandit-high-severity
+      path: bandit-only-high.json
