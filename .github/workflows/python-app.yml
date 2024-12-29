@@ -1,24 +1,4 @@
-Skip to content
-Navigation Menu
-Gokul-Prabakran1
-SecOps
 
-Type / to search
-Code
-Issues
-Pull requests
-Actions
-Projects
-Wiki
-Security
-Insights
-Settings
-CI
-Update python-app.yml #4
-Jobs
-Run details
-Workflow file for this run
-.github/workflows/python-app.yml at 50fbbe0
 name: CI
 
 on: [push]
