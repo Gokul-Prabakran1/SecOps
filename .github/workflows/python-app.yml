@@ -1,56 +1,59 @@
-
-
 name: CI
 
 on: [push]
 
 jobs:
- sast_scan:
-   name: Run Bandit Scan
-   runs-on: ubuntu-latest
+  sast_scan:
+    name: Run Bandit Scan
+    runs-on: ubuntu-latest
 
-   steps:
-   - name: Checkout code
-     uses: actions/checkout@v2
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-   - name: Set up Python
-     uses: actions/setup-python@v2
-     with:
-       python-version: 3.8
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
 
-   - name: Install Bandit
-     run: pip install bandit
+    - name: Install Bandit
+      run: pip install bandit
 
-   - name: Run Bandit Scan
-     uses: shundor/python-bandit-scan@v1.0
-     with:
-        path:  vulnerability.py 
+    - name: Run Bandit Scan
+      uses: shundor/python-bandit-scan@v1.0
+      with:
+        path: vulnerability.py
         level: high
         confidence: high
 
-jobs:
- docker_scan:
- - name: Docker Setup Docker
-     uses: docker/setup-docker-action@v4.1.0
-     with:
-       version: latest
+  docker_scan:
+    name: Docker Setup and Scan
+    runs-on: ubuntu-latest
 
-- name: Build Docker Image
-     run: docker build -f Dockerfile -t myappscout:latest .
-       
-  - name: Docker Scout     
-        uses: docker/scout-action@v1.16.1
-with:
-       dockerhub-user: ${{ secrets.REPO_USER }}
-       dockerhub-password: ${{ secrets.REPO_PWD }}
-       command: quickview,cves
-       only-severities: critical,high
-       sarif-file: scout-report.sarif
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
 
+    - name: Setup Docker
+      uses: docker/setup-docker-action@v4.1.0
+      with:
+        version: latest
 
-       - name: Upload Artifact
-     uses: actions/upload-artifact@v3
-     if: always()
-     with:
-       name: docker-scout-findings
-       path: scout-report.sarif
+    - name: Build Docker Image
+      run: docker build -f Dockerfile -t myappscout:latest .
+
+    - name: Docker Scout
+      uses: docker/scout-action@v1.16.1
+      with:
+        dockerhub-user: ${{ secrets.REPO_USER }}
+        dockerhub-password: ${{ secrets.REPO_PWD }}
+        command: quickview,cves
+        only-severities: critical,high
+        sarif-file: scout-report.sarif
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: docker-scout-findings
+        path: scout-report.sarif
