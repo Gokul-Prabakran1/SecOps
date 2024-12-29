@@ -22,8 +22,8 @@ jobs:
     - name: Run Bandit Scan
       uses: shundor/python-bandit-scan@v1.0
       with:
-        path: 'vulnerability.py'
-        bandit_flags: '-lll -o sast-findings.json -f json'
+        path: vulnerability.py -f json -o sast-findings.json
+        #bandit_flags: '-lll -o sast-findings.json -f json'
         
     - name: Upload Artifact of SAST SCAN 
       uses: actions/upload-artifact@v4
