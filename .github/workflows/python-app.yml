@@ -20,7 +20,7 @@ jobs:
      # run: pip install bandit
 
     - name: Run Bandit Scan
-      uses: rpiraces-plain/bandit-check@main
+      uses: shundor/python-bandit-scan@v1.0
       with:
         path: 'vulnerability.py'
         bandit_flags: '-lll -o sast-findings.json -f json'
